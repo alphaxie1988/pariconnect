@@ -32,17 +32,12 @@
         }
         
         .logo {
-            height: 60px;
+            max-width: 220px;
+            width: 100%;
+            padding: 10px;
             margin-bottom: 15px;
         }
 
-        h1 {
-            color: #012d6a;
-            margin-bottom: 15px;
-            font-size: 2.5em;
-            font-weight: 600;
-        }
-        
         p {
             color: #666;
             font-size: 1em;
@@ -198,7 +193,6 @@
 <body>
     <div class="container">
         <img class="logo" src="https://app.pariconnect.com/images/PARiConnect%20Logo.svg" alt="PARiConnect logo">
-        <h1>Pariconnect</h1>
         <p>Creating Connections. Changing Lives.</p>
         
         <div class="status-section">
@@ -255,10 +249,9 @@
                 const isRunning = data.running === true;
                 
                 const badgeClass = isRunning ? 'running' : 'not-running';
-                const badgeText = isRunning ? '✓ Running' : '✗ Not Running';
-                const statusEmoji = isRunning ? '🟢' : '⚪';
-                
-                statusContainer.innerHTML = `<div class="status-badge ${badgeClass}">${statusEmoji} ${badgeText}</div>`;
+                const badgeText = isRunning ? 'Running' : 'Not Running';
+
+                statusContainer.innerHTML = `<div class="status-badge ${badgeClass}">${badgeText}</div>`;
                 statusInfo.innerHTML = `<div>Last checked: ${new Date().toLocaleTimeString()}</div>`;
                 
             } catch (error) {
