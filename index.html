@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pariconnect</title>
+    <link rel="icon" type="image/svg+xml" href="https://app.pariconnect.com/images/PARiConnect%20Logo.svg">
     <style>
         * {
             margin: 0;
@@ -30,6 +31,11 @@
             text-align: center;
         }
         
+        .logo {
+            height: 60px;
+            margin-bottom: 15px;
+        }
+
         h1 {
             color: #012d6a;
             margin-bottom: 15px;
@@ -191,8 +197,9 @@
 </head>
 <body>
     <div class="container">
+        <img class="logo" src="https://app.pariconnect.com/images/PARiConnect%20Logo.svg" alt="PARiConnect logo">
         <h1>Pariconnect</h1>
-        <p>Connect, collaborate, and create amazing things together.</p>
+        <p>Creating Connections. Changing Lives.</p>
         
         <div class="status-section">
             <div class="status-label">Service Status</div>
@@ -206,9 +213,8 @@
         </div>
         
         <div class="buttons-section">
-            <button class="button" onclick="checkStatus()">Check Status</button>
+            <button class="button secondary" onclick="checkStatus()">Check Status</button>
             <button class="button" onclick="runService()">Run Service</button>
-            <a href="https://github.com/alphaxie1988/pariconnect" class="button secondary" target="_blank">GitHub</a>
         </div>
     </div>
 
