@@ -43,6 +43,56 @@
             line-height: 1.6;
         }
         
+        .status-section {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+            border-left: 4px solid #667eea;
+        }
+        
+        .status-label {
+            color: #999;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .status-badge.running {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+        
+        .status-badge.not-running {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+        
+        .status-badge.loading {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+        
+        .status-badge.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+        
         .button {
             display: inline-block;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -52,11 +102,37 @@
             text-decoration: none;
             font-size: 1em;
             transition: transform 0.3s, box-shadow 0.3s;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
         }
         
         .button:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .status-info {
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 15px;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffc107;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -64,7 +140,70 @@
     <div class="container">
         <h1>Welcome to Pariconnect</h1>
         <p>Connect, collaborate, and create amazing things together.</p>
+        
+        <div class="status-section">
+            <div class="status-label">Service Status</div>
+            <div id="statusContainer">
+                <div class="status-badge loading">
+                    <span class="spinner"></span>Checking Status...
+                </div>
+            </div>
+            <div class="status-info" id="statusInfo"></div>
+        </div>
+        
+        <button class="button" onclick="checkStatus()">Refresh Status</button>
         <a href="https://github.com/alphaxie1988/pariconnect" class="button">Visit Repository</a>
     </div>
+
+    <script>
+        const API_URL = 'https://pariconnect.shares.zrok.io/status';
+        
+        async function checkStatus() {
+            const statusContainer = document.getElementById('statusContainer');
+            const statusInfo = document.getElementById('statusInfo');
+            
+            try {
+                // Show loading state
+                statusContainer.innerHTML = '<div class="status-badge loading"><span class="spinner"></span>Checking Status...</div>';
+                statusInfo.innerHTML = '';
+                
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'skip_zrok_interstitial': 'true',
+                        'Z-skip-interstitial': 'true'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Handle the status response
+                const status = data.status || data.state || 'unknown';
+                const isRunning = status.toLowerCase() === 'running';
+                
+                const badgeClass = isRunning ? 'running' : 'not-running';
+                const badgeText = isRunning ? '✓ Running' : '✗ Not Running';
+                const statusEmoji = isRunning ? '🟢' : '🔴';
+                
+                statusContainer.innerHTML = `<div class="status-badge ${badgeClass}">${statusEmoji} ${badgeText}</div>`;
+                statusInfo.innerHTML = `<div>Last checked: ${new Date().toLocaleTimeString()}</div>`;
+                
+            } catch (error) {
+                console.error('Error checking status:', error);
+                statusContainer.innerHTML = '<div class="status-badge error">⚠ Unable to Connect</div>';
+                statusInfo.innerHTML = `<div>Error: ${error.message}</div><div style="font-size: 0.8em; margin-top: 5px;">Please check your connection or try again later.</div>`;
+            }
+        }
+        
+        // Check status when page loads
+        document.addEventListener('DOMContentLoaded', checkStatus);
+        
+        // Optional: Refresh status every 30 seconds
+        setInterval(checkStatus, 30000);
+    </script>
 </body>
 </html>
