@@ -13,7 +13,7 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f5f5f5;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -23,141 +23,140 @@
         
         .container {
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             padding: 40px;
             max-width: 600px;
             text-align: center;
         }
         
         h1 {
-            color: #333;
-            margin-bottom: 20px;
+            color: #012d6a;
+            margin-bottom: 15px;
             font-size: 2.5em;
+            font-weight: 600;
         }
         
         p {
             color: #666;
-            font-size: 1.1em;
+            font-size: 1em;
             margin-bottom: 30px;
             line-height: 1.6;
         }
         
         .status-section {
-            background: #f5f5f5;
-            border-radius: 8px;
+            background: #f9f9f9;
+            border-radius: 12px;
             padding: 25px;
             margin: 30px 0;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #012d6a;
         }
         
         .status-label {
-            color: #999;
-            font-size: 0.9em;
+            color: #012d6a;
+            font-size: 0.85em;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+            font-weight: 600;
         }
         
         .status-badge {
             display: inline-block;
-            padding: 12px 24px;
+            padding: 14px 28px;
             border-radius: 25px;
-            font-weight: bold;
-            font-size: 1.2em;
+            font-weight: 600;
+            font-size: 1.1em;
             margin: 10px 0;
             transition: all 0.3s ease;
         }
         
         .status-badge.running {
-            background: #d4edda;
-            color: #155724;
-            border: 2px solid #28a745;
+            background: #e8f5e9;
+            color: #1b5e20;
+            border: 2px solid #4caf50;
         }
         
         .status-badge.not-running {
-            background: #f8d7da;
-            color: #721c24;
-            border: 2px solid #dc3545;
+            background: #ffebee;
+            color: #b71c1c;
+            border: 2px solid #f44336;
         }
         
         .status-badge.loading {
-            background: #fff3cd;
-            color: #856404;
-            border: 2px solid #ffc107;
+            background: #e3f2fd;
+            color: #012d6a;
+            border: 2px solid #012d6a;
         }
         
         .status-badge.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 2px solid #dc3545;
+            background: #ffebee;
+            color: #b71c1c;
+            border: 2px solid #f44336;
+        }
+        
+        .status-info {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 12px;
+        }
+        
+        .buttons-section {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 25px;
         }
         
         .button {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #012d6a;
             color: white;
-            padding: 12px 30px;
-            border-radius: 5px;
+            padding: 12px 28px;
+            border-radius: 8px;
             text-decoration: none;
-            font-size: 1em;
-            transition: transform 0.3s, box-shadow 0.3s;
-            margin: 10px;
+            font-size: 0.95em;
+            font-weight: 500;
+            transition: all 0.3s ease;
             border: none;
             cursor: pointer;
+            box-shadow: 0 2px 8px rgba(1, 45, 106, 0.2);
         }
         
         .button:hover {
+            background: #0a1f47;
+            box-shadow: 0 4px 12px rgba(1, 45, 106, 0.3);
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
         
-        .status-info {
-            font-size: 0.85em;
-            color: #999;
-            margin-top: 15px;
-            text-align: left;
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        .button.secondary {
             background: white;
-            padding: 10px;
-            border-radius: 5px;
-            max-height: 200px;
-            overflow-y: auto;
+            color: #012d6a;
+            border: 2px solid #012d6a;
+            box-shadow: none;
         }
         
-        .debug-box {
+        .button.secondary:hover {
             background: #f0f0f0;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            text-align: left;
-            font-family: monospace;
-            font-size: 0.75em;
-            color: #333;
-            word-break: break-all;
-            white-space: pre-wrap;
         }
         
-        .error-box {
-            background: #fee;
-            border: 1px solid #fcc;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            text-align: left;
-            font-family: monospace;
-            font-size: 0.75em;
-            color: #c33;
-            word-break: break-all;
-            white-space: pre-wrap;
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
         
         .spinner {
             display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #ffc107;
-            border-top: 2px solid transparent;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(1, 45, 106, 0.3);
+            border-top: 2px solid #012d6a;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
             margin-right: 8px;
@@ -168,11 +167,31 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #1b5e20;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            border-left: 4px solid #4caf50;
+            font-size: 0.9em;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #b71c1c;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            border-left: 4px solid #f44336;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to Pariconnect</h1>
+        <h1>Pariconnect</h1>
         <p>Connect, collaborate, and create amazing things together.</p>
         
         <div class="status-section">
@@ -183,134 +202,110 @@
                 </div>
             </div>
             <div class="status-info" id="statusInfo"></div>
-            <div class="debug-box" id="debugInfo" style="display:none; margin-top: 15px;">
-                <strong>Debug Info:</strong><br/>
-                <div id="debugContent"></div>
-            </div>
+            <div id="statusMessage"></div>
         </div>
         
-        <button class="button" onclick="checkStatus()">Refresh Status</button>
-        <button class="button" onclick="toggleDebug()" style="background: #666;">Toggle Debug</button>
-        <a href="https://github.com/alphaxie1988/pariconnect" class="button">Visit Repository</a>
+        <div class="buttons-section">
+            <button class="button" onclick="checkStatus()">Check Status</button>
+            <button class="button" onclick="runService()">Run Service</button>
+            <a href="https://github.com/alphaxie1988/pariconnect" class="button secondary" target="_blank">GitHub</a>
+        </div>
     </div>
 
     <script>
-        const API_URL = 'https://pariconnect.shares.zrok.io/status';
-        let debugMode = false;
-        let debugLog = [];
-        
-        function addDebugLog(message) {
-            const timestamp = new Date().toLocaleTimeString();
-            debugLog.push(`[${timestamp}] ${message}`);
-            const debugContent = document.getElementById('debugContent');
-            debugContent.textContent = debugLog.join('\n');
-        }
-        
-        function toggleDebug() {
-            debugMode = !debugMode;
-            document.getElementById('debugInfo').style.display = debugMode ? 'block' : 'none';
-        }
+        const STATUS_URL = 'https://pariconnect.shares.zrok.io/status';
+        const RUN_URL = 'https://pariconnect.shares.zrok.io/run2';
+        const HEADERS = {
+            'skip_zrok_interstitial': 'true',
+            'Z-skip-interstitial': 'true',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        };
         
         async function checkStatus() {
             const statusContainer = document.getElementById('statusContainer');
             const statusInfo = document.getElementById('statusInfo');
-            debugLog = [];
+            const statusMessage = document.getElementById('statusMessage');
             
             try {
-                // Show loading state
                 statusContainer.innerHTML = '<div class="status-badge loading"><span class="spinner"></span>Checking Status...</div>';
                 statusInfo.innerHTML = '';
-                addDebugLog('Starting status check...');
-                addDebugLog('API URL: ' + API_URL);
+                statusMessage.innerHTML = '';
                 
-                // Fetch with custom headers to skip zrok interstitial and cache busting
-                addDebugLog('Sending fetch request with custom headers...');
                 const timestamp = new Date().getTime();
-                const response = await fetch(API_URL + '?t=' + timestamp, {
+                const response = await fetch(STATUS_URL + '?t=' + timestamp, {
                     method: 'GET',
-                    headers: {
-                        'skip_zrok_interstitial': 'true',
-                        'Z-skip-interstitial': 'true',
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0'
-                    },
+                    headers: HEADERS,
                     credentials: 'omit',
                     cache: 'no-store'
                 });
                 
-                addDebugLog('Response received');
-                addDebugLog('Status: ' + response.status);
-                addDebugLog('Status Text: ' + response.statusText);
-                addDebugLog('OK: ' + response.ok);
-                
-                // Check if response is ok
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
                 const data = await response.json();
-                addDebugLog('Response JSON parsed successfully');
-                addDebugLog('Full Response: ' + JSON.stringify(data, null, 2));
-                
-                // Check what fields are in the response
-                addDebugLog('Response keys: ' + Object.keys(data).join(', '));
-                addDebugLog('Response.running: ' + data.running);
-                
-                // Handle the status response - check for "running" field
                 const isRunning = data.running === true;
-                addDebugLog('isRunning: ' + isRunning);
                 
                 const badgeClass = isRunning ? 'running' : 'not-running';
                 const badgeText = isRunning ? '✓ Running' : '✗ Not Running';
                 const statusEmoji = isRunning ? '🟢' : '🔴';
                 
                 statusContainer.innerHTML = `<div class="status-badge ${badgeClass}">${statusEmoji} ${badgeText}</div>`;
-                statusInfo.innerHTML = `
-                    <div style="font-size: 0.8em; margin-top: 5px;">Last checked: ${new Date().toLocaleTimeString()}</div>
-                    <div style="font-size: 0.75em; color: #666; margin-top: 5px;">
-                        <strong>Running:</strong> ${isRunning ? 'Yes ✓' : 'No ✗'}
-                    </div>
-                `;
-                
-                addDebugLog('✅ Status check completed successfully');
+                statusInfo.innerHTML = `<div>Last checked: ${new Date().toLocaleTimeString()}</div>`;
                 
             } catch (error) {
-                addDebugLog('❌ ERROR CAUGHT');
-                addDebugLog('Error Type: ' + error.name);
-                addDebugLog('Error Message: ' + error.message);
-                addDebugLog('Error Stack: ' + error.stack);
-                
                 statusContainer.innerHTML = '<div class="status-badge error">⚠ Unable to Connect</div>';
-                statusInfo.innerHTML = `
-                    <div><strong>Error Details:</strong></div>
-                    <div class="error-box">
-                        <strong>Error Type:</strong> ${error.name}<br/>
-                        <strong>Error Message:</strong> ${error.message}<br/>
-                        <strong>API URL:</strong> ${API_URL}<br/>
-                        <strong>Time:</strong> ${new Date().toLocaleTimeString()}<br/>
-                        <br/>
-                        <strong>Possible causes:</strong><br/>
-                        • API server is down or unreachable<br/>
-                        • CORS policy is blocking the request<br/>
-                        • Network connectivity issue<br/>
-                        • Browser security policy<br/>
-                        <br/>
-                        📱 <strong>Click "Toggle Debug" button above to see detailed logs</strong>
-                    </div>
-                `;
+                statusInfo.innerHTML = `<div>${error.message}</div>`;
+                statusMessage.innerHTML = `<div class="error-message">Failed to check status. Please try again.</div>`;
             }
+        }
+        
+        async function runService() {
+            const statusContainer = document.getElementById('statusContainer');
+            const statusMessage = document.getElementById('statusMessage');
             
-            // Auto-show debug info if there's an error
-            if (debugMode || debugLog.some(log => log.includes('ERROR'))) {
-                document.getElementById('debugInfo').style.display = 'block';
+            try {
+                statusMessage.innerHTML = '';
+                const button = event.target;
+                button.disabled = true;
+                button.innerHTML = '<span class="spinner"></span>Running...';
+                
+                const timestamp = new Date().getTime();
+                const response = await fetch(RUN_URL + '?t=' + timestamp, {
+                    method: 'GET',
+                    headers: HEADERS,
+                    credentials: 'omit',
+                    cache: 'no-store'
+                });
+                
+                button.innerHTML = 'Run Service';
+                button.disabled = false;
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                statusMessage.innerHTML = `<div class="success-message">✓ Service started successfully</div>`;
+                
+                // Check status after 2 seconds
+                setTimeout(checkStatus, 2000);
+                
+            } catch (error) {
+                const button = event.target;
+                button.innerHTML = 'Run Service';
+                button.disabled = false;
+                
+                statusMessage.innerHTML = `<div class="error-message">✗ Failed to run service: ${error.message}</div>`;
             }
         }
         
         // Check status when page loads
         document.addEventListener('DOMContentLoaded', checkStatus);
         
-        // Optional: Refresh status every 30 seconds
+        // Refresh status every 30 seconds
         setInterval(checkStatus, 30000);
     </script>
 </body>
