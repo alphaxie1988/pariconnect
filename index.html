@@ -84,9 +84,9 @@
         }
         
         .status-badge.not-running {
-            background: #ffebee;
-            color: #b71c1c;
-            border: 2px solid #f44336;
+            background: #f0f0f0;
+            color: #555555;
+            border: 2px solid #9e9e9e;
         }
         
         .status-badge.loading {
@@ -256,7 +256,7 @@
                 
                 const badgeClass = isRunning ? 'running' : 'not-running';
                 const badgeText = isRunning ? '✓ Running' : '✗ Not Running';
-                const statusEmoji = isRunning ? '🟢' : '🔴';
+                const statusEmoji = isRunning ? '🟢' : '⚪';
                 
                 statusContainer.innerHTML = `<div class="status-badge ${badgeClass}">${statusEmoji} ${badgeText}</div>`;
                 statusInfo.innerHTML = `<div>Last checked: ${new Date().toLocaleTimeString()}</div>`;
