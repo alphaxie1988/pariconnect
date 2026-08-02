@@ -223,15 +223,20 @@
                 addDebugLog('Starting status check...');
                 addDebugLog('API URL: ' + API_URL);
                 
-                // Fetch with custom headers to skip zrok interstitial
+                // Fetch with custom headers to skip zrok interstitial and cache busting
                 addDebugLog('Sending fetch request with custom headers...');
-                const response = await fetch(API_URL, {
+                const timestamp = new Date().getTime();
+                const response = await fetch(API_URL + '?t=' + timestamp, {
                     method: 'GET',
                     headers: {
                         'skip_zrok_interstitial': 'true',
-                        'Z-skip-interstitial': 'true'
+                        'Z-skip-interstitial': 'true',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
                     },
-                    credentials: 'omit'
+                    credentials: 'omit',
+                    cache: 'no-store'
                 });
                 
                 addDebugLog('Response received');
@@ -251,7 +256,6 @@
                 // Check what fields are in the response
                 addDebugLog('Response keys: ' + Object.keys(data).join(', '));
                 addDebugLog('Response.running: ' + data.running);
-                addDebugLog('Response.url: ' + data.url);
                 
                 // Handle the status response - check for "running" field
                 const isRunning = data.running === true;
@@ -265,13 +269,14 @@
                 statusInfo.innerHTML = `
                     <div style="font-size: 0.8em; margin-top: 5px;">Last checked: ${new Date().toLocaleTimeString()}</div>
                     <div style="font-size: 0.75em; color: #666; margin-top: 5px;">
-                        <strong>API Response:</strong><br/>
-                        ${JSON.stringify(data, null, 2).replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                        <strong>Running:</strong> ${isRunning ? 'Yes ✓' : 'No ✗'}
                     </div>
                 `;
                 
+                addDebugLog('✅ Status check completed successfully');
+                
             } catch (error) {
-                addDebugLog('ERROR CAUGHT');
+                addDebugLog('❌ ERROR CAUGHT');
                 addDebugLog('Error Type: ' + error.name);
                 addDebugLog('Error Message: ' + error.message);
                 addDebugLog('Error Stack: ' + error.stack);
