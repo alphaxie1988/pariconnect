@@ -116,6 +116,24 @@
             font-size: 0.85em;
             color: #999;
             margin-top: 15px;
+            text-align: left;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .error-box {
+            background: #fee;
+            border: 1px solid #fcc;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.75em;
+            color: #c33;
         }
         
         .spinner {
@@ -167,6 +185,8 @@
                 statusContainer.innerHTML = '<div class="status-badge loading"><span class="spinner"></span>Checking Status...</div>';
                 statusInfo.innerHTML = '';
                 
+                console.log('Fetching from:', API_URL);
+                
                 // Fetch with custom headers to skip zrok interstitial
                 const response = await fetch(API_URL, {
                     method: 'GET',
@@ -177,9 +197,12 @@
                     credentials: 'omit'
                 });
                 
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
                 // Check if response is ok
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
                 const data = await response.json();
@@ -193,12 +216,36 @@
                 const statusEmoji = isRunning ? '🟢' : '🔴';
                 
                 statusContainer.innerHTML = `<div class="status-badge ${badgeClass}">${statusEmoji} ${badgeText}</div>`;
-                statusInfo.innerHTML = `<div style="font-size: 0.8em; margin-top: 5px;">Last checked: ${new Date().toLocaleTimeString()}</div>`;
+                statusInfo.innerHTML = `<div style="font-size: 0.8em; margin-top: 5px;">Last checked: ${new Date().toLocaleTimeString()}</div><div style="font-size: 0.75em; color: #666; margin-top: 5px;">API Response: ${JSON.stringify(data)}</div>`;
                 
             } catch (error) {
                 console.error('Error checking status:', error);
+                console.error('Error name:', error.name);
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
+                
                 statusContainer.innerHTML = '<div class="status-badge error">⚠ Unable to Connect</div>';
-                statusInfo.innerHTML = `<div style="font-size: 0.85em;"><strong>Error:</strong> ${error.message}</div><div style="font-size: 0.8em; margin-top: 10px;">Checked: ${new Date().toLocaleTimeString()}</div>`;
+                statusInfo.innerHTML = `
+                    <div><strong>Error Details:</strong></div>
+                    <div class="error-box">
+                        <div><strong>Error Type:</strong> ${error.name}</div>
+                        <div><strong>Error Message:</strong> ${error.message}</div>
+                        <div style="margin-top: 5px;"><strong>API URL:</strong> ${API_URL}</div>
+                        <div style="margin-top: 5px;"><strong>Time:</strong> ${new Date().toLocaleTimeString()}</div>
+                        <div style="margin-top: 10px; color: #666;">
+                            <strong>Possible causes:</strong>
+                            <ul style="margin: 5px 0; padding-left: 20px;">
+                                <li>API server is down or unreachable</li>
+                                <li>CORS policy is blocking the request</li>
+                                <li>Network connectivity issue</li>
+                                <li>Browser security policy</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 0.75em; color: #666;">
+                        💡 Check your browser console (F12) for more details
+                    </div>
+                `;
             }
         }
         
