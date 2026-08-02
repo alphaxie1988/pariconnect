@@ -183,22 +183,22 @@
                 }
                 
                 const data = await response.json();
+                console.log('API Response:', data);
                 
-                // Handle the status response
-                const status = data.status || data.state || 'unknown';
-                const isRunning = status.toLowerCase() === 'running';
+                // Handle the status response - check for "running" field
+                const isRunning = data.running === true;
                 
                 const badgeClass = isRunning ? 'running' : 'not-running';
                 const badgeText = isRunning ? '✓ Running' : '✗ Not Running';
                 const statusEmoji = isRunning ? '🟢' : '🔴';
                 
                 statusContainer.innerHTML = `<div class="status-badge ${badgeClass}">${statusEmoji} ${badgeText}</div>`;
-                statusInfo.innerHTML = `<div>Status: <strong>${status}</strong></div><div style="font-size: 0.8em; margin-top: 5px;">Last checked: ${new Date().toLocaleTimeString()}</div>`;
+                statusInfo.innerHTML = `<div style="font-size: 0.8em; margin-top: 5px;">Last checked: ${new Date().toLocaleTimeString()}</div>`;
                 
             } catch (error) {
                 console.error('Error checking status:', error);
                 statusContainer.innerHTML = '<div class="status-badge error">⚠ Unable to Connect</div>';
-                statusInfo.innerHTML = `<div style="font-size: 0.85em;"><strong>Error:</strong> ${error.message}</div><div style="font-size: 0.8em; margin-top: 10px;">Make sure the API endpoint is accessible and CORS-enabled.</div><div style="font-size: 0.75em; margin-top: 5px; color: #999;">Checked: ${new Date().toLocaleTimeString()}</div>`;
+                statusInfo.innerHTML = `<div style="font-size: 0.85em;"><strong>Error:</strong> ${error.message}</div><div style="font-size: 0.8em; margin-top: 10px;">Checked: ${new Date().toLocaleTimeString()}</div>`;
             }
         }
         
