@@ -120,8 +120,22 @@
             background: white;
             padding: 10px;
             border-radius: 5px;
-            max-height: 150px;
+            max-height: 200px;
             overflow-y: auto;
+        }
+        
+        .debug-box {
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.75em;
+            color: #333;
+            word-break: break-all;
+            white-space: pre-wrap;
         }
         
         .error-box {
@@ -134,6 +148,8 @@
             font-family: monospace;
             font-size: 0.75em;
             color: #c33;
+            word-break: break-all;
+            white-space: pre-wrap;
         }
         
         .spinner {
@@ -167,27 +183,48 @@
                 </div>
             </div>
             <div class="status-info" id="statusInfo"></div>
+            <div class="debug-box" id="debugInfo" style="display:none; margin-top: 15px;">
+                <strong>Debug Info:</strong><br/>
+                <div id="debugContent"></div>
+            </div>
         </div>
         
         <button class="button" onclick="checkStatus()">Refresh Status</button>
+        <button class="button" onclick="toggleDebug()" style="background: #666;">Toggle Debug</button>
         <a href="https://github.com/alphaxie1988/pariconnect" class="button">Visit Repository</a>
     </div>
 
     <script>
         const API_URL = 'https://pariconnect.shares.zrok.io/status';
+        let debugMode = false;
+        let debugLog = [];
+        
+        function addDebugLog(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            debugLog.push(`[${timestamp}] ${message}`);
+            const debugContent = document.getElementById('debugContent');
+            debugContent.textContent = debugLog.join('\n');
+        }
+        
+        function toggleDebug() {
+            debugMode = !debugMode;
+            document.getElementById('debugInfo').style.display = debugMode ? 'block' : 'none';
+        }
         
         async function checkStatus() {
             const statusContainer = document.getElementById('statusContainer');
             const statusInfo = document.getElementById('statusInfo');
+            debugLog = [];
             
             try {
                 // Show loading state
                 statusContainer.innerHTML = '<div class="status-badge loading"><span class="spinner"></span>Checking Status...</div>';
                 statusInfo.innerHTML = '';
-                
-                console.log('Fetching from:', API_URL);
+                addDebugLog('Starting status check...');
+                addDebugLog('API URL: ' + API_URL);
                 
                 // Fetch with custom headers to skip zrok interstitial
+                addDebugLog('Sending fetch request with custom headers...');
                 const response = await fetch(API_URL, {
                     method: 'GET',
                     headers: {
@@ -197,8 +234,10 @@
                     credentials: 'omit'
                 });
                 
-                console.log('Response status:', response.status);
-                console.log('Response ok:', response.ok);
+                addDebugLog('Response received');
+                addDebugLog('Status: ' + response.status);
+                addDebugLog('Status Text: ' + response.statusText);
+                addDebugLog('OK: ' + response.ok);
                 
                 // Check if response is ok
                 if (!response.ok) {
@@ -206,46 +245,60 @@
                 }
                 
                 const data = await response.json();
-                console.log('API Response:', data);
+                addDebugLog('Response JSON parsed successfully');
+                addDebugLog('Full Response: ' + JSON.stringify(data, null, 2));
+                
+                // Check what fields are in the response
+                addDebugLog('Response keys: ' + Object.keys(data).join(', '));
+                addDebugLog('Response.running: ' + data.running);
+                addDebugLog('Response.url: ' + data.url);
                 
                 // Handle the status response - check for "running" field
                 const isRunning = data.running === true;
+                addDebugLog('isRunning: ' + isRunning);
                 
                 const badgeClass = isRunning ? 'running' : 'not-running';
                 const badgeText = isRunning ? '✓ Running' : '✗ Not Running';
                 const statusEmoji = isRunning ? '🟢' : '🔴';
                 
                 statusContainer.innerHTML = `<div class="status-badge ${badgeClass}">${statusEmoji} ${badgeText}</div>`;
-                statusInfo.innerHTML = `<div style="font-size: 0.8em; margin-top: 5px;">Last checked: ${new Date().toLocaleTimeString()}</div><div style="font-size: 0.75em; color: #666; margin-top: 5px;">API Response: ${JSON.stringify(data)}</div>`;
+                statusInfo.innerHTML = `
+                    <div style="font-size: 0.8em; margin-top: 5px;">Last checked: ${new Date().toLocaleTimeString()}</div>
+                    <div style="font-size: 0.75em; color: #666; margin-top: 5px;">
+                        <strong>API Response:</strong><br/>
+                        ${JSON.stringify(data, null, 2).replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                    </div>
+                `;
                 
             } catch (error) {
-                console.error('Error checking status:', error);
-                console.error('Error name:', error.name);
-                console.error('Error message:', error.message);
-                console.error('Error stack:', error.stack);
+                addDebugLog('ERROR CAUGHT');
+                addDebugLog('Error Type: ' + error.name);
+                addDebugLog('Error Message: ' + error.message);
+                addDebugLog('Error Stack: ' + error.stack);
                 
                 statusContainer.innerHTML = '<div class="status-badge error">⚠ Unable to Connect</div>';
                 statusInfo.innerHTML = `
                     <div><strong>Error Details:</strong></div>
                     <div class="error-box">
-                        <div><strong>Error Type:</strong> ${error.name}</div>
-                        <div><strong>Error Message:</strong> ${error.message}</div>
-                        <div style="margin-top: 5px;"><strong>API URL:</strong> ${API_URL}</div>
-                        <div style="margin-top: 5px;"><strong>Time:</strong> ${new Date().toLocaleTimeString()}</div>
-                        <div style="margin-top: 10px; color: #666;">
-                            <strong>Possible causes:</strong>
-                            <ul style="margin: 5px 0; padding-left: 20px;">
-                                <li>API server is down or unreachable</li>
-                                <li>CORS policy is blocking the request</li>
-                                <li>Network connectivity issue</li>
-                                <li>Browser security policy</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div style="margin-top: 10px; font-size: 0.75em; color: #666;">
-                        💡 Check your browser console (F12) for more details
+                        <strong>Error Type:</strong> ${error.name}<br/>
+                        <strong>Error Message:</strong> ${error.message}<br/>
+                        <strong>API URL:</strong> ${API_URL}<br/>
+                        <strong>Time:</strong> ${new Date().toLocaleTimeString()}<br/>
+                        <br/>
+                        <strong>Possible causes:</strong><br/>
+                        • API server is down or unreachable<br/>
+                        • CORS policy is blocking the request<br/>
+                        • Network connectivity issue<br/>
+                        • Browser security policy<br/>
+                        <br/>
+                        📱 <strong>Click "Toggle Debug" button above to see detailed logs</strong>
                     </div>
                 `;
+            }
+            
+            // Auto-show debug info if there's an error
+            if (debugMode || debugLog.some(log => log.includes('ERROR'))) {
+                document.getElementById('debugInfo').style.display = 'block';
             }
         }
         
