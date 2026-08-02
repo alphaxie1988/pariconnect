@@ -167,66 +167,22 @@
                 statusContainer.innerHTML = '<div class="status-badge loading"><span class="spinner"></span>Checking Status...</div>';
                 statusInfo.innerHTML = '';
                 
-                // Try multiple approaches
-                let data = null;
-                let success = false;
+                // Fetch with custom headers to skip zrok interstitial
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'skip_zrok_interstitial': 'true',
+                        'Z-skip-interstitial': 'true'
+                    },
+                    credentials: 'omit'
+                });
                 
-                // Approach 1: Direct fetch with mode: 'no-cors'
-                try {
-                    const response = await fetch(API_URL, {
-                        method: 'GET',
-                        mode: 'no-cors',
-                        headers: {
-                            'skip_zrok_interstitial': 'true',
-                            'Z-skip-interstitial': 'true'
-                        }
-                    });
-                    
-                    if (response.type === 'opaque') {
-                        console.log('Opaque response - trying alternative method');
-                    }
-                } catch (e) {
-                    console.log('Direct fetch failed, trying with CORS proxy');
+                // Check if response is ok
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
-                // Approach 2: Try with CORS proxy
-                const corsProxies = [
-                    `https://cors-anywhere.herokuapp.com/${API_URL}`,
-                    `https://api.allorigins.win/raw?url=${encodeURIComponent(API_URL)}`,
-                ];
-                
-                for (let proxyUrl of corsProxies) {
-                    try {
-                        const response = await fetch(proxyUrl, {
-                            method: 'GET',
-                            headers: {
-                                'skip_zrok_interstitial': 'true',
-                                'Z-skip-interstitial': 'true'
-                            }
-                        });
-                        
-                        if (response.ok) {
-                            const text = await response.text();
-                            try {
-                                data = JSON.parse(text);
-                                success = true;
-                                break;
-                            } catch (e) {
-                                console.log('Could not parse JSON from proxy');
-                            }
-                        }
-                    } catch (e) {
-                        console.log('Proxy attempt failed:', proxyUrl);
-                        continue;
-                    }
-                }
-                
-                // If all approaches fail, show helpful message
-                if (!success) {
-                    statusContainer.innerHTML = '<div class="status-badge error">⚠ Unable to Connect</div>';
-                    statusInfo.innerHTML = `<div style="font-size: 0.85em;">The API endpoint might be offline or blocking requests.<br/>Ensure the service at https://pariconnect.shares.zrok.io is running.</div><div style="font-size: 0.8em; margin-top: 10px; color: #666;">Tried at: ${new Date().toLocaleTimeString()}</div>`;
-                    return;
-                }
+                const data = await response.json();
                 
                 // Handle the status response
                 const status = data.status || data.state || 'unknown';
@@ -242,7 +198,7 @@
             } catch (error) {
                 console.error('Error checking status:', error);
                 statusContainer.innerHTML = '<div class="status-badge error">⚠ Unable to Connect</div>';
-                statusInfo.innerHTML = `<div>Error: ${error.message}</div><div style="font-size: 0.8em; margin-top: 5px;">Please check your connection or try again later.</div>`;
+                statusInfo.innerHTML = `<div style="font-size: 0.85em;"><strong>Error:</strong> ${error.message}</div><div style="font-size: 0.8em; margin-top: 10px;">Make sure the API endpoint is accessible and CORS-enabled.</div><div style="font-size: 0.75em; margin-top: 5px; color: #999;">Checked: ${new Date().toLocaleTimeString()}</div>`;
             }
         }
         
