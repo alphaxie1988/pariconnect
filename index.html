@@ -164,6 +164,10 @@
             cursor: not-allowed;
             transform: none;
         }
+
+        .button.hidden {
+            display: none;
+        }
         
         .spinner {
             display: inline-block;
@@ -221,8 +225,8 @@
         
         <div class="buttons-section">
             <button class="button secondary" onclick="checkStatus()">Check Status</button>
-            <button class="button" onclick="runService(event)">Run Service</button>
-            <button class="button danger" onclick="stopService(event)">Stop Service</button>
+            <button id="runServiceBtn" class="button hidden" onclick="runService(event)">Run Service</button>
+            <button id="stopServiceBtn" class="button danger hidden" onclick="stopService(event)">Stop Service</button>
         </div>
     </div>
 
@@ -238,16 +242,33 @@
             'Expires': '0'
         };
         
+        function setActionButtons(isRunning) {
+            const runBtn = document.getElementById('runServiceBtn');
+            const stopBtn = document.getElementById('stopServiceBtn');
+
+            if (isRunning === true) {
+                runBtn.classList.add('hidden');
+                stopBtn.classList.remove('hidden');
+            } else if (isRunning === false) {
+                runBtn.classList.remove('hidden');
+                stopBtn.classList.add('hidden');
+            } else {
+                // Status unknown - keep both hidden rather than flash the wrong one
+                runBtn.classList.add('hidden');
+                stopBtn.classList.add('hidden');
+            }
+        }
+
         async function checkStatus() {
             const statusContainer = document.getElementById('statusContainer');
             const statusInfo = document.getElementById('statusInfo');
             const statusMessage = document.getElementById('statusMessage');
-            
+
             try {
                 statusContainer.innerHTML = '<div class="status-badge loading"><span class="spinner"></span>Checking Status...</div>';
                 statusInfo.innerHTML = '';
                 statusMessage.innerHTML = '';
-                
+
                 const timestamp = new Date().getTime();
                 const response = await fetch(STATUS_URL + '?t=' + timestamp, {
                     method: 'GET',
@@ -255,24 +276,26 @@
                     credentials: 'omit',
                     cache: 'no-store'
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-                
+
                 const data = await response.json();
                 const isRunning = data.running === true;
-                
+
                 const badgeClass = isRunning ? 'running' : 'not-running';
                 const badgeText = isRunning ? 'Running' : 'Not Running';
 
                 statusContainer.innerHTML = `<div class="status-badge ${badgeClass}">${badgeText}</div>`;
                 statusInfo.innerHTML = `<div>Last checked: ${new Date().toLocaleTimeString()}</div>`;
-                
+                setActionButtons(isRunning);
+
             } catch (error) {
                 statusContainer.innerHTML = '<div class="status-badge error">⚠ Unable to Connect</div>';
                 statusInfo.innerHTML = `<div>${error.message}</div>`;
                 statusMessage.innerHTML = `<div class="error-message">Failed to check status. Please try again.</div>`;
+                setActionButtons(null);
             }
         }
         
