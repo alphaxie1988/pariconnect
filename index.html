@@ -51,8 +51,13 @@
             padding: 25px;
             margin: 30px 0;
             border-left: 4px solid #012d6a;
+            transition: border-color 0.3s ease;
         }
-        
+
+        .status-section.running {
+            border-left-color: #4caf50;
+        }
+
         .status-label {
             color: #012d6a;
             font-size: 0.85em;
@@ -60,6 +65,11 @@
             letter-spacing: 1.5px;
             margin-bottom: 15px;
             font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .status-section.running .status-label {
+            color: #1b5e20;
         }
         
         .status-badge {
@@ -223,7 +233,7 @@
         <img class="logo" src="https://app.pariconnect.com/images/PARiConnect%20Logo.svg" alt="PARiConnect logo">
         <p>Creating Connections. Changing Lives.</p>
         
-        <div class="status-section">
+        <div class="status-section" id="statusSection">
             <div class="status-label">Service Status</div>
             <div id="statusContainer">
                 <div class="status-badge loading">
@@ -256,6 +266,8 @@
         function setActionButtons(isRunning) {
             const runBtn = document.getElementById('runServiceBtn');
             const stopBtn = document.getElementById('stopServiceBtn');
+            const statusSection = document.getElementById('statusSection');
+            statusSection.classList.toggle('running', isRunning === true);
 
             if (isRunning === true) {
                 runBtn.classList.add('hidden');
