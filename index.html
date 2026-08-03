@@ -252,10 +252,12 @@
             } else if (isRunning === false) {
                 runBtn.classList.remove('hidden');
                 stopBtn.classList.add('hidden');
+                resetStopConfirm(stopBtn);
             } else {
                 // Status unknown - keep both hidden rather than flash the wrong one
                 runBtn.classList.add('hidden');
                 stopBtn.classList.add('hidden');
+                resetStopConfirm(stopBtn);
             }
         }
 
@@ -340,12 +342,33 @@
             }
         }
 
+        let stopConfirmTimeout = null;
+
+        function resetStopConfirm(button) {
+            clearTimeout(stopConfirmTimeout);
+            button.dataset.armed = 'false';
+            button.textContent = 'Stop Service';
+        }
+
         async function stopService(event) {
+            const button = event.target;
+
+            if (button.dataset.armed !== 'true') {
+                // First click: arm the button and wait for a confirming second click
+                button.dataset.armed = 'true';
+                button.textContent = 'Confirm Stop?';
+                clearTimeout(stopConfirmTimeout);
+                stopConfirmTimeout = setTimeout(() => resetStopConfirm(button), 3000);
+                return;
+            }
+
+            // Second click within the window: proceed with the actual stop
+            resetStopConfirm(button);
+
             const statusMessage = document.getElementById('statusMessage');
 
             try {
                 statusMessage.innerHTML = '';
-                const button = event.target;
                 button.disabled = true;
                 button.innerHTML = '<span class="spinner"></span>Stopping...';
 
@@ -378,7 +401,6 @@
                 setTimeout(checkStatus, 2000);
 
             } catch (error) {
-                const button = event.target;
                 button.innerHTML = 'Stop Service';
                 button.disabled = false;
 
