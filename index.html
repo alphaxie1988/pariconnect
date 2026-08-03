@@ -112,6 +112,8 @@
         
         .button {
             display: inline-block;
+            position: relative;
+            overflow: hidden;
             background: #012d6a;
             color: white;
             padding: 12px 28px;
@@ -123,6 +125,15 @@
             border: none;
             cursor: pointer;
             box-shadow: 0 2px 8px rgba(1, 45, 106, 0.2);
+        }
+
+        .confirm-progress {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 3px;
+            width: 0%;
+            background: rgba(255, 255, 255, 0.7);
         }
         
         .button:hover {
@@ -226,7 +237,7 @@
         <div class="buttons-section">
             <button class="button secondary" onclick="checkStatus()">Check Status</button>
             <button id="runServiceBtn" class="button hidden" onclick="runService(event)">Run Service</button>
-            <button id="stopServiceBtn" class="button danger hidden" onclick="stopService(event)">Stop Service</button>
+            <button id="stopServiceBtn" class="button danger hidden" onclick="stopService(event)"><span class="btn-label">Stop Service</span><span class="confirm-progress"></span></button>
         </div>
     </div>
 
@@ -342,23 +353,34 @@
             }
         }
 
+        const STOP_BTN_IDLE_HTML = '<span class="btn-label">Stop Service</span><span class="confirm-progress"></span>';
+        const STOP_CONFIRM_MS = 3000;
         let stopConfirmTimeout = null;
 
         function resetStopConfirm(button) {
             clearTimeout(stopConfirmTimeout);
             button.dataset.armed = 'false';
-            button.textContent = 'Stop Service';
+            button.innerHTML = STOP_BTN_IDLE_HTML;
         }
 
         async function stopService(event) {
-            const button = event.target;
+            const button = event.currentTarget;
 
             if (button.dataset.armed !== 'true') {
                 // First click: arm the button and wait for a confirming second click
                 button.dataset.armed = 'true';
-                button.textContent = 'Confirm Stop?';
+                const label = button.querySelector('.btn-label');
+                const bar = button.querySelector('.confirm-progress');
+                label.textContent = 'Confirm Stop?';
+                // Reset the bar instantly, then transition it down to 0 over the confirm window
+                bar.style.transition = 'none';
+                bar.style.width = '100%';
+                void bar.offsetWidth;
+                bar.style.transition = `width ${STOP_CONFIRM_MS}ms linear`;
+                bar.style.width = '0%';
+
                 clearTimeout(stopConfirmTimeout);
-                stopConfirmTimeout = setTimeout(() => resetStopConfirm(button), 3000);
+                stopConfirmTimeout = setTimeout(() => resetStopConfirm(button), STOP_CONFIRM_MS);
                 return;
             }
 
@@ -380,7 +402,7 @@
                     cache: 'no-store'
                 });
 
-                button.innerHTML = 'Stop Service';
+                button.innerHTML = STOP_BTN_IDLE_HTML;
                 button.disabled = false;
 
                 if (!response.ok) {
@@ -401,7 +423,7 @@
                 setTimeout(checkStatus, 2000);
 
             } catch (error) {
-                button.innerHTML = 'Stop Service';
+                button.innerHTML = STOP_BTN_IDLE_HTML;
                 button.disabled = false;
 
                 statusMessage.innerHTML = `<div class="error-message">✗ Failed to stop service: ${error.message}</div>`;
