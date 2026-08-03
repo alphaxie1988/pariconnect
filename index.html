@@ -145,6 +145,19 @@
         .button.secondary:hover {
             background: #f0f0f0;
         }
+
+        /* Danger/stop button style */
+        .button.danger {
+            background: #b71c1c;
+            color: white;
+            box-shadow: 0 2px 8px rgba(183,28,28,0.18);
+        }
+
+        .button.danger:hover {
+            background: #8f1414;
+            box-shadow: 0 4px 12px rgba(183,28,28,0.25);
+            transform: translateY(-2px);
+        }
         
         .button:disabled {
             opacity: 0.6;
@@ -208,13 +221,15 @@
         
         <div class="buttons-section">
             <button class="button secondary" onclick="checkStatus()">Check Status</button>
-            <button class="button" onclick="runService()">Run Service</button>
+            <button class="button" onclick="runService(event)">Run Service</button>
+            <button class="button danger" onclick="stopService(event)">Stop Service</button>
         </div>
     </div>
 
     <script>
         const STATUS_URL = 'https://pariconnect.shares.zrok.io/status';
         const RUN_URL = 'https://pariconnect.shares.zrok.io/run';
+        const STOP_URL = 'https://pariconnect.shares.zrok.io/stop';
         const HEADERS = {
             'skip_zrok_interstitial': 'true',
             'Z-skip-interstitial': 'true',
@@ -261,7 +276,7 @@
             }
         }
         
-        async function runService() {
+        async function runService(event) {
             const statusContainer = document.getElementById('statusContainer');
             const statusMessage = document.getElementById('statusMessage');
             
@@ -287,6 +302,7 @@
                 }
                 
                 const data = await response.json();
+                // show a friendly success message (server may also return details)
                 statusMessage.innerHTML = `<div class="success-message">✓ Service started successfully</div>`;
                 
                 // Check status after 2 seconds
@@ -298,6 +314,52 @@
                 button.disabled = false;
                 
                 statusMessage.innerHTML = `<div class="error-message">✗ Failed to run service: ${error.message}</div>`;
+            }
+        }
+
+        async function stopService(event) {
+            const statusMessage = document.getElementById('statusMessage');
+
+            try {
+                statusMessage.innerHTML = '';
+                const button = event.target;
+                button.disabled = true;
+                button.innerHTML = '<span class="spinner"></span>Stopping...';
+
+                const timestamp = new Date().getTime();
+                const response = await fetch(STOP_URL + '?t=' + timestamp, {
+                    method: 'GET',
+                    headers: HEADERS,
+                    credentials: 'omit',
+                    cache: 'no-store'
+                });
+
+                button.innerHTML = 'Stop Service';
+                button.disabled = false;
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                // The API replies {"success": true, "message": "Pariconnect stopped."}
+                if (data && data.success) {
+                    statusMessage.innerHTML = `<div class="success-message">✓ ${data.message || 'Service stopped.'}</div>`;
+                } else {
+                    // If the API did not indicate success, show fallback
+                    statusMessage.innerHTML = `<div class="error-message">✗ Failed to stop service${data && data.message ? (': ' + data.message) : '.'}</div>`;
+                }
+
+                // Check status after 2 seconds
+                setTimeout(checkStatus, 2000);
+
+            } catch (error) {
+                const button = event.target;
+                button.innerHTML = 'Stop Service';
+                button.disabled = false;
+
+                statusMessage.innerHTML = `<div class="error-message">✗ Failed to stop service: ${error.message}</div>`;
             }
         }
         
